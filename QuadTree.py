@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
 """
-Created on Wed Nov  6 17:03:19 2019
+Creating the QuadTree
 
-@author: Chris
 """
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,7 +11,7 @@ from matplotlib import patches
 # =============================================================================
 
 
-class Point():
+class Body():
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -38,7 +36,7 @@ class QTree():
     
     def __init__(self, data, k):        
         self.threshold = k
-        self.points      = [Point(data[i,0], data[i,1]) for i in range(len(data))]
+        self.data      = [Body(data[i,0], data[i,1]) for i in range(len(data))]
         
         self.X_dim    = (np.amax(data[:,0])-np.amin(data[:,0]))
         self.Y_dim    = (np.amax(data[:,1])-np.amin(data[:,1]))
@@ -47,7 +45,7 @@ class QTree():
         self.X_dim    = (np.amax(data[:,0])-self.X_origin)*1.1
         self.Y_dim    = (np.amax(data[:,1])-self.Y_origin)*1.1
         
-        self.root = Node(self.X_origin, self.Y_origin, self.X_dim, self.Y_dim, self.points)
+        self.root = Node(self.X_origin, self.Y_origin, self.X_dim, self.Y_dim, self.data)
         
         self.__subdivide()
 
@@ -60,8 +58,8 @@ class QTree():
         leaves = find_leaves(self.root)
         for n in leaves:
             ax.add_patch(patches.Rectangle((n.x0, n.y0), n.width, n.height, fill=False))
-        x = [point.x for point in self.points]
-        y = [point.y for point in self.points]
+        x = [point.x for point in self.data]
+        y = [point.y for point in self.data]
         plt.plot(x, y, 'ro')
         plt.show()
         return
@@ -119,8 +117,8 @@ def find_leaves(node):
 
 def main():
     
-    data = np.random.rand(100,2)
-    QTree(data, 1)
+    data = np.random.rand(1000,2)
+    QTree(data, 1).graph()
 
 if __name__ == "__main__":
     main()
