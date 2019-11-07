@@ -13,6 +13,11 @@ from matplotlib import patches
 # =============================================================================
 
 
+class Point():
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
 class Node():
     def __init__(self, x0, y0, w, h, points):
         self.x0 = x0
@@ -33,7 +38,7 @@ class QTree():
     
     def __init__(self, data, k):        
         self.threshold = k
-        self.data      = data
+        self.points      = [Point(data[i,0], data[i,1]) for i in range(len(data))]
         
         self.X_dim    = (np.amax(data[:,0])-np.amin(data[:,0]))
         self.Y_dim    = (np.amax(data[:,1])-np.amin(data[:,1]))
@@ -42,7 +47,7 @@ class QTree():
         self.X_dim    = (np.amax(data[:,0])-self.X_origin)*1.1
         self.Y_dim    = (np.amax(data[:,1])-self.Y_origin)*1.1
         
-        self.root = Node(self.X_origin, self.Y_origin, self.X_dim, self.Y_dim, self.data)
+        self.root = Node(self.X_origin, self.Y_origin, self.X_dim, self.Y_dim, self.points)
         
         self.__subdivide()
 
@@ -55,8 +60,8 @@ class QTree():
         leaves = find_leaves(self.root)
         for n in leaves:
             ax.add_patch(patches.Rectangle((n.x0, n.y0), n.width, n.height, fill=False))
-        x = self.data[:,0]
-        y = self.data[:,1]
+        x = [point.x for point in self.points]
+        y = [point.y for point in self.points]
         plt.plot(x, y, 'ro')
         plt.show()
         return
@@ -92,8 +97,10 @@ def recursive_subdivide(node, k):
     
     
 def contains(x, y, w, h, points):
-    pts = points[np.where((points[:,0] >=x) & (points[:,0] <=x+w) & 
-                 (points[:,1] >=y) & (points[:,1] <=y+h))]
+    pts = []
+    for point in points:
+        if point.x >= x and point.x <= x+w and point.y>=y and point.y<=y+h:
+            pts.append(point)
     return pts
 
 def find_leaves(node):
@@ -111,10 +118,9 @@ def find_leaves(node):
 
 
 def main():
-    data = np.random.rand(10,2)
-
-    Q = QTree(data, 1)
-    Q.graph()
+    
+    data = np.random.rand(100,2)
+    QTree(data, 1)
 
 if __name__ == "__main__":
     main()
