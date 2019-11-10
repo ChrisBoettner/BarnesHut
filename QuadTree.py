@@ -22,7 +22,7 @@ class Body():
         self.m  = m
     
     def Calc_Acc(self, QTree, theta):
-        Ax, Ay = Force(self.x,self.y, QTree, theta)
+        Ax, Ay = Force.TotalAcc(self.x,self.y, QTree, theta)
         return(Ax,Ay)
         
 
@@ -139,7 +139,7 @@ def find_leaves(node):
 def main():
     from numpy import random
     
-    data = random.rand(6,5)
+    data = random.rand(3,5)
     Q = QTree(data, 1)
     return(data,Q)
 
