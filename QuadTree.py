@@ -2,7 +2,6 @@
 Creating the QuadTree
 
 """
-from numpy import amax, amin
 import matplotlib.pyplot as plt
 from matplotlib import patches
 
@@ -14,16 +13,29 @@ import Force
 
 
 class Body():
-    def __init__(self, x, y, vx=None, vy=None, m=None):
+    def __init__(self, x, y, vx, vy, m):
         self.x = x
         self.y = y
         self.vx = vx
         self.vy = vy
         self.m  = m
+        
+        self.ax = None
+        self.ay = None
     
-    def Calc_Acc(self, QTree, theta):
-        Ax, Ay = Force.TotalAcc(self.x,self.y, QTree, theta)
-        return(Ax,Ay)
+    def Update_Acc(self, QTree, theta):
+        self.ax, self.ay = Force.TotalAcc(self.x,self.y, QTree.root, theta)
+        
+    def Update_Pos(self, dt):
+        vx_hs = self.vx + 0.5*dt*self.ax
+        vy_hs = self.vy + 0.5*dt*self.ay
+        self.x = self.x + dt*vx_hs
+        self.y = self.y + dt*vy_hs
+        return([self.x,self.y])
+        
+    def Update_Vel(self, dt):
+        self.vx = self.vx + 0.5*dt*self.ax
+        self.vy = self.vy + 0.5*dt*self.ay
         
 
 class Node():
@@ -60,19 +72,32 @@ class QTree():
         self.bodies      = [Body(*[data[i,n] for n in range(data.shape[1])])                            
                              for i in range(data.shape[0])]
         
-        self.X_dim    = (amax(data[:,0])-amin(data[:,0]))
-        self.Y_dim    = (amax(data[:,1])-amin(data[:,1]))
-        self.X_origin = amin(data[:,0])-0.1*self.X_dim
-        self.Y_origin = amin(data[:,1])-0.1*self.Y_dim
-        self.X_dim    = (amax(data[:,0])-self.X_origin)*1.1
-        self.Y_dim    = (amax(data[:,1])-self.Y_origin)*1.1
-        
-        self.root = Node(self.X_origin, self.Y_origin, self.X_dim, self.Y_dim, self.bodies)
-        
+        self.__build_root()
         self.__subdivide()
 
     def __subdivide(self):
         recursive_subdivide(self.root, self.threshold)
+        
+    def __build_root(self):
+        X_min   = min([self.bodies[n].x for n in range(len(self.bodies))])
+        Y_min   = min([self.bodies[n].y for n in range(len(self.bodies))])
+        X_max   = max([self.bodies[n].x for n in range(len(self.bodies))])
+        Y_max   = max([self.bodies[n].y for n in range(len(self.bodies))])            
+
+        X_dim     = X_max-X_min
+        Y_dim     = Y_max-Y_min
+        
+        X_origin = X_min-0.1*X_dim
+        Y_origin = Y_min-0.1*Y_dim
+        
+        X_dim    = (X_max-X_origin)*1.1
+        Y_dim    = (Y_max-Y_origin)*1.1
+        
+        self.root = Node(X_origin, Y_origin, X_dim, Y_dim, self.bodies)
+    
+    def update(self):
+        self.__build_root()
+        self.__subdivide()
     
     def graph(self):
         fig, ax = plt.subplots(figsize=(12, 8))
@@ -86,7 +111,7 @@ class QTree():
         plt.show()
 
 # =============================================================================
-# Helper functions
+# Helper functions for QuadTree
 # =============================================================================
 
 def recursive_subdivide(node, k):
@@ -139,7 +164,7 @@ def find_leaves(node):
 def main():
     from numpy import random
     
-    data = random.rand(3,5)
+    data = random.rand(4,5)
     Q = QTree(data, 1)
     return(data,Q)
 
