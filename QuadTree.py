@@ -24,7 +24,7 @@ class Body():
         self.ay = None
     
     def Update_Acc(self, QTree, theta):
-        self.ax, self.ay = Force.TotalAcc(self.x,self.y, QTree.root, theta)
+        self.ax, self.ay = Force.TotalAcc(self, QTree.root, theta)
         
     def Update_Pos(self, dt):
         vx_hs = self.vx + 0.5*dt*self.ax
@@ -155,18 +155,3 @@ def find_leaves(node):
         for child in node.children:
             leaves += (find_leaves(child))
     return(leaves)
-
-# =============================================================================
-# Main
-# =============================================================================
-
-
-def main():
-    from numpy import random
-    
-    data = random.rand(4,5)
-    Q = QTree(data, 1)
-    return(data,Q)
-
-if __name__ == "__main__":
-    data, Q = main()
