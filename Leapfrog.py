@@ -3,18 +3,19 @@ Numerical Integrator
 
 """
 import numpy as np
-from QuadTree import QTree
+from OctoTree import OTree
 import matplotlib. pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.animation import FuncAnimation, writers
 
 def Integration(Tree, t_end, dt, theta, Pot = 0):
-    Pos_Evo     = np.empty([len(Tree.bodies),2,len(np.arange(0,t_end+dt,dt))])
+    Pos_Evo     = np.empty([len(Tree.bodies), 3, len(np.arange(0,t_end+dt,dt))])
     Cons_Evo    = np.empty([len(np.arange(0,t_end+dt,dt)),3])
-    Q           = Tree
+    O           = Tree
     
     n = 0
     for t in np.arange(0,t_end+dt,dt):
-        Q, Positions, Kin_E, Pot_E, AMom = Step(Q, theta, dt, Pot)
+        O, Positions, Kin_E, Pot_E, AMom = Step(O, theta, dt, Pot)
         Pos_Evo[:,:,n] = Positions
         if Pot == 1:
             Cons_Evo[n,:] = Kin_E, Pot_E, AMom       
@@ -28,7 +29,7 @@ def Integration(Tree, t_end, dt, theta, Pot = 0):
 
 
 def Step(Tree, theta, dt, Pot = 0):
-    Positions = np.empty([len(Tree.bodies), 2]) 
+    Positions = np.empty([len(Tree.bodies), 3]) 
     
     if not Tree.bodies[0].ax:
         for n in range(len(Tree.bodies)):
@@ -39,19 +40,20 @@ def Step(Tree, theta, dt, Pot = 0):
     AMom = None
             
     if Pot == 1:
-        Ekin = Q.calc_Ekin()
-        Epot = Q.calc_Epot()
-        AMom = Q.calc_AMom()
+        Ekin = O.calc_Ekin()
+        Epot = O.calc_Epot()
+        AMom = O.calc_AMom()
     
     for n in range(len(Tree.bodies)):
         pos = Tree.bodies[n].Update_Pos(dt)
         Positions[n,:] = pos
        
-    Q.update()
+    O.update()
     
     for n in range(len(Tree.bodies)):
         Tree.bodies[n].ax_old = Tree.bodies[n].ax
         Tree.bodies[n].ay_old = Tree.bodies[n].ay
+        Tree.bodies[n].az_old = Tree.bodies[n].az
         Tree.bodies[n].Update_Acc(Tree, theta, Pot)     
         
     for n in range(len(Tree.bodies)):
@@ -67,30 +69,26 @@ def Step(Tree, theta, dt, Pot = 0):
 # =============================================================================
      
 def main():
-    #ata = np.array([[1,1,0,0,100000],[0,0,1.1,1,100000]])
-    data = np.append(np.random.rand(5,4), np.random.rand(5,1)*1e+3,axis=1)
-    #data = np.array([[0,1,-6.28,0,1],[0,0,0,0,332948.6]])
-    Q = QTree(data, 1)
-    return(data,Q)
+    #data = np.array([[1,1,0,0,100000],[0,0,1.1,1,100000]])
+    #data = np.append(np.random.rand(2,6), np.random.rand(5,1)*1e+3,axis=1)
+    data = np.array([[0,1,0,-6.28,0,0,1],[0,0,0,0,0,2,332948.6],[2,0,1,1.1,1,0,10000]])
+    O = OTree(data, 1)
+    return(data,O)
 
 if __name__ == "__main__":
-     data, Q = main()
+     data, O = main()
      
      t_end  = 1
      dt     = 0.00001
-     Pos, Cons = Integration(Q ,t_end ,dt ,0 ,Pot = 1)
+     Pos, Cons = Integration(O ,t_end ,dt ,0 ,Pot = 1)
      
 
-
      fig = plt.figure()
-     ax = fig.add_subplot(111)     
+     ax = fig.add_subplot(111, projection='3d')
      #ax.set_aspect(aspect=1)
-     ax.plot(Pos[0,0,:],Pos[0,1,:])
-     ax.plot(Pos[1,0,:],Pos[1,1,:])
-     ax.plot(Pos[2,0,:],Pos[2,1,:])
-     ax.plot(Pos[3,0,:],Pos[3,1,:])
-     ax.plot(Pos[4,0,:],Pos[4,1,:])
-     #ax.plot(Pos[2,0,:],Pos[2,1,:])
+     ax.plot(Pos[0,0,:],Pos[0,1,:],Pos[0,2,:])
+     ax.plot(Pos[1,0,:],Pos[1,1,:],Pos[1,2,:])
+     ax.plot(Pos[2,0,:],Pos[2,1,:],Pos[2,2,:])
      plt.show()
 
       
