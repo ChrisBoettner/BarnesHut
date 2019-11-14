@@ -5,7 +5,6 @@ Calculating the Force on a particle
 """
 
 from math import sqrt
-import pdb
    
 def TotalAcc(body, node, theta, Pot = 0):
     """
@@ -14,6 +13,8 @@ def TotalAcc(body, node, theta, Pot = 0):
     If Pot = 1: forces and potential energy is returned
     
     """
+    rho = 3*10e+09 # 1/1000 density of earth in earth masses/AU^3
+    
     x = body.x
     y = body.y
     if not node.children:
@@ -30,6 +31,13 @@ def TotalAcc(body, node, theta, Pot = 0):
                     return(0 ,0 ,0)
             else:
                 d = sqrt((x-node.ComX)**2+(y-node.ComY)**2)
+                dmin = (node.TotM/rho*0.25)**0.33+(body.m/rho*0.25)**3
+                if d<dmin:
+                    d = dmin # if distance is two small, replace with minimum 
+                             # distance two spheres (with earths density) would
+                             # need to have to not collie
+                    
+                
                 if Pot == 0:
                     return(TwoBodyAcc(x, y, node.ComX, node.ComY, d, node.TotM)
                            )
@@ -39,10 +47,16 @@ def TotalAcc(body, node, theta, Pot = 0):
                            )
     else:
         d = sqrt((x-node.ComX)**2+(y-node.ComY)**2)
+        dmin = (node.TotM/rho*0.25)**0.33+(body.m/rho*0.25)**3        
+                
         if d == 0:
             return(0, 0, 0)
         
-        elif node.width/d < theta:            
+
+        if d<dmin:
+            d = dmin
+        
+        if node.width/d < theta:            
             if Pot == 0:
                 return(TwoBodyAcc(x, y, node.ComX, node.ComY, d, node.TotM)
                        )
@@ -73,7 +87,7 @@ def TwoBodyPotential(m1, m2, d):
     """
     Acceleration of body 1
     """
-    G = 1.184e-4 # G in Au^3/(yr^2* earth masses)
+    G = 1.184e-4 # G in AU^3/(yr^2* earth masses)
     
     V = -G*m1*m2*1./d
     return([V])    

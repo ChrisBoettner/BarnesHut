@@ -67,8 +67,8 @@ def Step(Tree, theta, dt, Pot = 0):
 # =============================================================================
      
 def main():
-    #data = np.array([[1,1,0,0,1],[0,0,0,0,1]])
-    data = np.random.rand(5,5)
+    #ata = np.array([[1,1,0,0,100000],[0,0,1.1,1,100000]])
+    data = np.append(np.random.rand(5,4), np.random.rand(5,1)*1e+3,axis=1)
     #data = np.array([[0,1,-6.28,0,1],[0,0,0,0,332948.6]])
     Q = QTree(data, 1)
     return(data,Q)
@@ -88,6 +88,9 @@ if __name__ == "__main__":
      ax.plot(Pos[0,0,:],Pos[0,1,:])
      ax.plot(Pos[1,0,:],Pos[1,1,:])
      ax.plot(Pos[2,0,:],Pos[2,1,:])
+     ax.plot(Pos[3,0,:],Pos[3,1,:])
+     ax.plot(Pos[4,0,:],Pos[4,1,:])
+     #ax.plot(Pos[2,0,:],Pos[2,1,:])
      plt.show()
 
       

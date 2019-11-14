@@ -4,10 +4,9 @@ Creating the QuadTree
 """
 import matplotlib.pyplot as plt
 from matplotlib import patches
-import pdb
 
 import Gravity
-import SimpleGravity
+#import SimpleGravity
 
 # =============================================================================
 # Classes
@@ -35,7 +34,7 @@ class Body():
     def Update_Acc(self, QTree, theta, Pot = 0):
         self.ax, self.ay, self.potE = Gravity.TotalAcc(self, QTree.root, theta, Pot)
         #self.ax, self.ay, self.potE1 = SimpleGravity.TotalAccEasy(self, QTree, theta, Pot)
-        ## direct summing
+        ## direct summing algorithm
         
     def Update_Pos(self, dt):
         self.x = self.x + dt*self.vx + 0.5*self.ax*dt**2
