@@ -9,6 +9,15 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.animation import FuncAnimation, writers
 
 def Integration(Tree, t_end, dt, theta, Pot = 0):
+    """
+    Leapfrog Integator
+    
+    Tree        : OctoTree to be used for force calculation      
+    t_end       : End time of simulation
+    dt          : Time step
+    theta       : Accuracy measure
+    Pot         : potential energy to be calculted? y/n
+    """
     Pos_Evo     = np.empty([len(Tree.bodies), 3, len(np.arange(0,t_end+dt,dt))])
     Cons_Evo    = np.empty([len(np.arange(0,t_end+dt,dt)),3])
     O           = Tree
@@ -69,9 +78,7 @@ def Step(Tree, theta, dt, Pot = 0):
 # =============================================================================
      
 def main():
-    #data = np.array([[1,1,0,0,100000],[0,0,1.1,1,100000]])
-    #data = np.append(np.random.rand(2,6), np.random.rand(5,1)*1e+3,axis=1)
-    data = np.array([[0,1,0,-6.28,0,0,1],[0,0,0,0,0,2,332948.6],[2,0,1,1.1,1,0,10000]])
+    data = np.array([[0,1,0,-6.28,0,0,1],[0,0,0,0,0,0,332948],[0.002672,1,0,-6.27,-0.215,0,0.0123]])
     O = OTree(data, 1)
     return(data,O)
 
@@ -82,19 +89,22 @@ if __name__ == "__main__":
      dt     = 0.00001
      Pos, Cons = Integration(O ,t_end ,dt ,0 ,Pot = 1)
      
-
-     fig = plt.figure()
-     ax = fig.add_subplot(111, projection='3d')
-     #ax.set_aspect(aspect=1)
-     ax.plot(Pos[0,0,:],Pos[0,1,:],Pos[0,2,:])
-     ax.plot(Pos[1,0,:],Pos[1,1,:],Pos[1,2,:])
-     ax.plot(Pos[2,0,:],Pos[2,1,:],Pos[2,2,:])
-     plt.show()
-
-      
-
+     #saving position data
+     np.save("Position_data",Pos)
+    
 
 # =============================================================================
+# plotting
+#      fig = plt.figure()
+#      ax = fig.add_subplot(111, projection='3d')
+#      #ax.set_aspect(aspect=1)
+#      ax.plot(Pos[0,0,:],Pos[0,1,:],Pos[0,2,:])
+#      ax.plot(Pos[1,0,:],Pos[1,1,:],Pos[1,2,:])
+#      ax.plot(Pos[2,0,:],Pos[2,1,:],Pos[2,2,:])
+#      plt.show()
+# 
+# =============================================================================
+# animating
 #      fig, ax = plt.subplots(figsize=(9, 7))
 #      ax.set(xlim=(-1.1, 1.1), ylim=(-1.1, 1.1))
 #       
@@ -109,8 +119,8 @@ if __name__ == "__main__":
 #  
 #      plt.draw()
 #      plt.show()
-# =============================================================================
-   
+#
+#    saving as video   
      #Writer = writers['ffmpeg']
      #writer = Writer(fps=15, metadata=dict(artist='Me'), bitrate=1800)
      

@@ -84,7 +84,7 @@ class OTree():
     """
     Creates a OctoTree.
     
-    data   : position (3), velocity (3) and m, must be 5D array of shape [n,7]      
+    data   : position (3), velocity (3) and mass (1), must be 6D array of shape [n,6]      
     k      : number of max points per node (integer)
     points
     """

@@ -13,7 +13,7 @@ def TotalAcc(body, node, theta, Pot = 0):
     If Pot = 1: forces and potential energy is returned
     
     """
-    rho = 3*10e+09 # 1/1000 density of earth in earth masses/AU^3
+    rho = 3.1*10e+12 # density of earth in earth masses/AU^3
     
     x = body.x
     y = body.y
