@@ -33,14 +33,14 @@ def TotalAcc(body, node, theta, Pot = 0):
             else:
                 d = sqrt((x-node.ComX)**2+(y-node.ComY)**2+(z-node.ComZ)**2)
                 dmin = (node.TotM/rho*0.25)**0.33+(body.m/rho*0.25)**3
-                if d<dmin:
-                    d = dmin # if distance is two small, replace with minimum 
+                #if d<dmin:
+                    #d = dmin # if distance is two small, replace with minimum 
                              # distance two spheres (with earths density) would
                              # need to have to not collie
                     
                 
                 if Pot == 0:
-                    return(TwoBodyAcc(x, y, z, node.ComX, node.ComY, node.ComZ, d, node.TotM)
+                    return(TwoBodyAcc(x, y, z, node.ComX, node.ComY, node.ComZ, d, node.TotM)+[0]
                            )
                 if Pot == 1:
                     return(TwoBodyAcc(x, y, z, node.ComX, node.ComY, node.ComZ, d, node.TotM)+
@@ -54,12 +54,12 @@ def TotalAcc(body, node, theta, Pot = 0):
             return(0, 0, 0, 0)
         
 
-        if d<dmin:
-            d = dmin
+        #if d<dmin:
+            #d = dmin
         
         if node.width/d < theta:            
             if Pot == 0:
-                return(TwoBodyAcc(x, y, z, node.ComX, node.ComY, node.ComZ, d, node.TotM)
+                return(TwoBodyAcc(x, y, z, node.ComX, node.ComY, node.ComZ, d, node.TotM)+[0]
                        )
             if Pot == 1:
                 return(TwoBodyAcc(x, y, z, node.ComX, node.ComY, node.ComZ, d, node.TotM)+
@@ -68,7 +68,7 @@ def TotalAcc(body, node, theta, Pot = 0):
         else:
             if Pot == 0:            
                 TotF = [0, 0, 0]
-                TotV = None
+                TotV = 0
                 for child in node.children:
                     TotF = [sum(n) for n in zip(TotF, TotalAcc(body, child, theta, Pot))]
             if Pot == 1:
@@ -90,7 +90,8 @@ def TwoBodyPotential(m1, m2, d):
     """
     Acceleration of body 1
     """
-    G = 1.184e-4 # G in AU^3/(yr^2* earth masses)
+    #G = 1.184e-4 # G in AU^3/(yr^2* earth masses)
+    G  = 1
     
     V = -G*m1*m2*1./d
     return([V])    
@@ -100,7 +101,9 @@ def TwoBodyAcc(x1, y1, z1, x2, y2, z2, d, m2):
     Acceleration of body 1
     """
     
-    G = 1.184e-4 # G in Au^3/(yr^2* earth masses)
+    G = 8.89E-10 # G in Au^3/(day^2 * earth masses)
+    #G = 1.184e-4 # G in Au^3/(yr^2 * earth masses)
+    #G = 1 # for periodic orbits
     
     Ax = G*m2*1./d**3*(x2-x1)
     Ay = G*m2*1./d**3*(y2-y1)
