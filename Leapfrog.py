@@ -123,15 +123,15 @@ def main():
                         6.455164412594517E-04, 3.086536946477342E-03, -7.861175595808179E-05,
                         17.15])
     
-    data = np.array([Sun,Mercury,Venus,Earth,Mars,Jupiter,Saturn,Uranus,Neptune])
+    data = np.array([Sun,Jupiter,Saturn,Uranus,Neptune])
     O = OTree(data, 1)
     return(data,O)
 
 if __name__ == "__main__":
      data, O = main()
      
-     t_end  = 2*365
-     dt     = 0.01
+     t_end  = 200*365
+     dt     = 1
      Pos, Cons = Integration(O ,t_end ,dt ,0)
      
      #saving position data
